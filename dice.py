@@ -61,7 +61,7 @@ class Dice(commands.Cog):
 
         if match is None:
         # It was incompressible garbage
-            title="I am confusion"
+            title="I am confusion, my lord"
             description=f"It's got to be 'NdN+/-N'"
         else:
             saved_rolls = await self._conf.member(ctx.author).rolls()
@@ -97,8 +97,8 @@ class Dice(commands.Cog):
             # Check if it's a saved roll.
             saved_rolls = await self._conf.member(ctx.author).rolls()
             roll = saved_rolls.get(roll, None)
-            match = self.dice_re.match(roll)
-            if match is not None:
+            if roll is not None:
+                match = self.dice_re.match(roll)
                 return await self.send_roll_result(ctx, match)
         
         # It was incompressible garbage
@@ -119,14 +119,13 @@ class Dice(commands.Cog):
             modifier = int(match.group("modifier"))
         else:
             modifier = 0
+        # Default is confusion
+        title="I am confusion, my lord"
         if n_rolls < 0:
-            title="I am confusion"
             description="Why would you ask me to roll a die less than once??"
         elif n_rolls > 100:
-            title="I am confusion"
             description="What possible use is there to roll more than 100 dice??"
         elif n_faces < 2:
-            title="I am confusion"
             description="How can I roll it if it has less than 2 sides?? That's not even a coin!?!"
         else:
             rs = []
