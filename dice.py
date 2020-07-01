@@ -35,12 +35,30 @@ class Dice(commands.Cog):
                 r"(?P<n_rolls>\d+)d(?P<n_faces>\d+)(?P<modifier>[+-]\d+)?",
                 re.IGNORECASE)
 
+    @commands.command(name="list_saved_rolls")
+    async def list_saved_rolls(self, ctx: commands.Context):
+        saved_rolls = await self._conf.member(ctx.author).rolls()
+        if len(saved_rolls) == 0:
+            description = "You have no saved rolls"
+        else:
+            description = [""]
+            for name, roll in saved_rolls.items():
+                description.append(f"{name}: {roll}")
+            description = "\n".join(description)
+        contents = dict(
+                title="Your saved rolls, my lord",
+                description=f"{ctx.author.mention}{description}"
+                )
+        embed = discord.Embed.from_dict(contents)
+        return await ctx.send(embed=embed)
+
 
     @commands.command(name="save_roll")
     async def save_roll(self, ctx: commands.Context, name:str, roll:str):
         # Remove spaces from input
         roll = roll.replace(" ", "").lower()
         match = self.dice_re.match(roll)
+
         if match is None:
         # It was incompressible garbage
             title="I am confusion"
