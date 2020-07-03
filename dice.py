@@ -44,6 +44,16 @@ class Dice(commands.Cog):
                 r"\Z",
                 re.IGNORECASE)
 
+    
+    async def send_response(self, ctx: commands.Context,
+            title:str, description:str):
+        contents = dict(
+                title=title,
+                description=f"{ctx.author.mention}: {description}"
+                )
+        embed = discord.Embed.from_dict(contents)
+        return await ctx.send(embed=embed)
+
 
     @commands.command(name="list_saved_rolls")
     async def list_saved_rolls(self, ctx: commands.Context):
@@ -55,12 +65,9 @@ class Dice(commands.Cog):
             for name, roll in saved_rolls.items():
                 description.append(f"{name}: {roll}")
             description = "\n".join(description)
-        contents = dict(
-                title="Your saved rolls, my lord",
-                description=f"{ctx.author.mention}{description}"
-                )
-        embed = discord.Embed.from_dict(contents)
-        return await ctx.send(embed=embed)
+
+        return await self.send_response(ctx, "Your saved rolls, my lord",
+                description)
 
 
     @commands.command(name="save_roll")
@@ -80,12 +87,7 @@ class Dice(commands.Cog):
             title="Successfully saved"
             description=f'Saved "{roll}" as "{name}"'
 
-        contents = dict(
-                title=title,
-                description=f"{ctx.author.mention}{description}"
-                )
-        embed = discord.Embed.from_dict(contents)
-        return await ctx.send(embed=embed)
+        return await self.send_response(ctx, title, description)
 
 
     @commands.command(name="roll")
@@ -125,12 +127,7 @@ class Dice(commands.Cog):
                             "of your saved roll names."
         
         # It was incompressible garbage
-        contents = dict(
-                title=title,
-                description=f"{ctx.author.mention}{description}"
-                )
-        embed = discord.Embed.from_dict(contents)
-        return await ctx.send(embed=embed)
+        return await self.send_response(ctx, title, description)
 
 
     async def send_roll_result(self, ctx: commands.Context, match: re.Match, 
@@ -162,10 +159,5 @@ class Dice(commands.Cog):
                 description += f"+{additional_modifier}"
             description += f"={result}"
 
-        contents = dict(
-                title=title,
-                description=f"{ctx.author.mention}{description}"
-                )
-        embed = discord.Embed.from_dict(contents)
-        return await ctx.send(embed=embed)
+        return await self.send_response(ctx, title, description)
 
