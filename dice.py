@@ -112,8 +112,12 @@ class Dice(commands.Cog):
                 roll = saved_rolls.get(saved_match.group("name"), None)
                 if roll is not None:
                     roll_match = self.dice_re.match(roll)
+                    if saved_match.group("modifier") is not None:
+                        additional_modifier = int(saved_match.group("modifier"))
+                    else:
+                        additional_modifier = None
                     return await self.send_roll_result(ctx, roll_match, 
-                            int(saved_match.group("modifier")))
+                            additional_modifier)
                 else:
                     description = f"{saved_match.group('name')} is not one "\
                             "of your saved roll names."
