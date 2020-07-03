@@ -70,6 +70,24 @@ class Dice(commands.Cog):
                 description)
 
 
+    @commands.command(name="delete_saved_roll")
+    async def delete_saved_roll(self, ctx: commands.Context, name:str):
+        saved_rolls = await self._conf.member(ctx.author).rolls()
+        if name not in saved_rolls.keys():
+            title="I am confusion"
+            description=f'"{name}" is not one of your saved rolls!'
+        else:
+            # Delete it
+            del saved_rolls[name]
+            # Save it
+            await self._conf.member(ctx.author).rolls.set(saved_rolls)
+            # Inform them
+            title="Successfully deleted"
+            description=f'Deleted "{name}"'
+
+        return await self.send_response(ctx, title, description)
+
+
     @commands.command(name="save_roll")
     async def save_roll(self, ctx: commands.Context, name:str, roll:str):
         # Is the name valid?
