@@ -32,8 +32,16 @@ class Dice(commands.Cog):
         self._conf = Config.get_conf(None, 202020, cog_name=f"{self.__class__.__name__}", force_registration=True)
         self._conf.register_member(**_DEFAULT_MEMBER)
         self.dice_re = re.compile(
-                r"(?P<n_rolls>\d+)d(?P<n_faces>\d+)(?P<modifier>[+-]\d+)?",
+                r"(?P<n_rolls>\d+)"\
+                r"d"\
+                r"(?P<n_faces>\d+)"\
+                r"(?P<modifier>[+-]\d+)?",
                 re.IGNORECASE)
+        self.saved_re = re.compile(
+                r"(?P<name>\w+)"\
+                r"(?P<modifier>[+-]\d+)?",
+                re.IGNORECASE)
+
 
     @commands.command(name="list_saved_rolls")
     async def list_saved_rolls(self, ctx: commands.Context):
@@ -87,23 +95,30 @@ class Dice(commands.Cog):
         roll: str
             Description of the dice to roll.
         """
+        # Default is confusion
+        title="I am confusion"
+        description=f"It's got to be 'NdN+/-N' or a 'saved_roll_name+/-N'"
         # Remove spaces from input
         roll = roll.replace(" ", "").lower()
-        match = self.dice_re.match(roll)
+        roll_match = self.dice_re.match(roll)
 
-        if match is not None:
-            return await self.send_roll_result(ctx, match)
+        if roll_match is not None:
+            return await self.send_roll_result(ctx, roll_match)
         else:
             # Check if it's a saved roll.
-            saved_rolls = await self._conf.member(ctx.author).rolls()
-            roll = saved_rolls.get(roll, None)
-            if roll is not None:
-                match = self.dice_re.match(roll)
-                return await self.send_roll_result(ctx, match)
+            saved_match = self.saved_re.match(roll)
+            if saved_match is not None:
+                saved_rolls = await self._conf.member(ctx.author).rolls()
+                roll = saved_rolls.get(saved_match.group("name"), None)
+                if roll is not None:
+                    roll_match = self.dice_re.match(roll)
+                    return await self.send_roll_result(ctx, roll_match, 
+                            int(saved_match.group("modifier")))
+                else:
+                    description = f"{saved_match.group('name')} is not one "\
+                            "of your saved roll names."
         
         # It was incompressible garbage
-        title="I am confusion"
-        description=f"It's got to be 'NdN+/-N' or a saved roll name"
         contents = dict(
                 title=title,
                 description=f"{ctx.author.mention}{description}"
@@ -112,7 +127,8 @@ class Dice(commands.Cog):
         return await ctx.send(embed=embed)
 
 
-    async def send_roll_result(self, ctx: commands.Context, match: re.Match):
+    async def send_roll_result(self, ctx: commands.Context, match: re.Match, 
+            additional_modifier:int=None):
         n_rolls = int(match.group("n_rolls"))
         n_faces = int(match.group("n_faces"))
         if match.group("modifier") is not None:
@@ -134,7 +150,11 @@ class Dice(commands.Cog):
             result = sum(rs) + modifier
             title="Your sweet roll, my lord"
             rs_str = '+'.join((str(r) for r in rs))
-            description=f"({rs_str})+{modifier}={result}"
+            description = f"({rs_str})+{modifier}"
+            if additional_modifier is not None:
+                result += additional_modifier
+                description += f"+{additional_modifier}"
+            description += f"={result}"
 
         contents = dict(
                 title=title,
