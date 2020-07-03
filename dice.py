@@ -35,11 +35,13 @@ class Dice(commands.Cog):
                 r"(?P<n_rolls>\d+)"\
                 r"d"\
                 r"(?P<n_faces>\d+)"\
-                r"(?P<modifier>[+-]\d+)?",
+                r"(?P<modifier>[-+]\d+)?"\
+                r"\Z",
                 re.IGNORECASE)
         self.saved_re = re.compile(
                 r"(?P<name>\w+)"\
-                r"(?P<modifier>[+-]\d+)?",
+                r"(?P<modifier>[-+]\d+)?"\
+                r"\Z",
                 re.IGNORECASE)
 
 
