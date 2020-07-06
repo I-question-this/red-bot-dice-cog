@@ -32,6 +32,7 @@ class Dice(commands.Cog):
         self._conf = Config.get_conf(None, 202020, cog_name=f"{self.__class__.__name__}", force_registration=True)
         self._conf.register_member(**_DEFAULT_MEMBER)
         self.dice_re = re.compile(
+                r"\A"\
                 r"(?P<n_rolls>\d+)"\
                 r"d"\
                 r"(?P<n_faces>\d+)"\
@@ -39,6 +40,7 @@ class Dice(commands.Cog):
                 r"\Z",
                 re.IGNORECASE)
         self.saved_re = re.compile(
+                r"\A"\
                 r"(?P<name>\w+)"\
                 r"(?P<modifier>[-+]\d+)?"\
                 r"\Z",
