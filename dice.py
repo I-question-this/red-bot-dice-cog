@@ -11,14 +11,7 @@ from redbot.core import checks, commands, Config
 from redbot.core.data_manager import cog_data_path
 from redbot.core.bot import Red
 
-log = logging.getLogger("red.dad")
-_DEFAULT_GUILD = {
-    "change_nickname": False,
-    "barely_know_her": True,
-    "i_am_dad": True,
-    "rank_joke": True,
-    "response_chance": 60,
-}
+log = logging.getLogger("red.dice")
 _DEFAULT_MEMBER = {
         "rolls": {"weird":"2d6+1"}
 }
