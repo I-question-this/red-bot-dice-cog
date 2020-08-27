@@ -50,7 +50,7 @@ class Dice(commands.Cog):
         return await ctx.send(embed=embed)
 
 
-    @commands.command(name="list_saved_rolls")
+    @commands.command(name="list_saved_rolls", aliases=['saved_rolls'])
     async def list_saved_rolls(self, ctx: commands.Context):
         saved_rolls = await self._conf.member(ctx.author).rolls()
         if len(saved_rolls) == 0:
@@ -84,9 +84,8 @@ class Dice(commands.Cog):
 
 
     @commands.command(name="save_roll")
-    async def save_roll(self, ctx: commands.Context, name:str, roll:str):
+    async def save_roll(self, ctx: commands.Context, name:str, *roll):
         # Is the name valid?
-        name = name.replace(" ", "").lower()
         roll_match = self.dice_re.match(name)
 
         if roll_match is not None:
@@ -94,7 +93,7 @@ class Dice(commands.Cog):
             description = "Heresy! You can't name a roll as a roll!"
         else:
             # Seems legit, move forward
-            roll = roll.replace(" ", "").lower()
+            roll = "".join(roll)
             roll_match = self.dice_re.match(roll)
 
             if roll_match is None:
@@ -112,7 +111,7 @@ class Dice(commands.Cog):
 
 
     @commands.command(name="roll")
-    async def roll(self, ctx: commands.Context, roll:str):
+    async def roll(self, ctx: commands.Context, *roll):
         """Roll some dice
 
         Parameters
@@ -124,7 +123,7 @@ class Dice(commands.Cog):
         title="I am confusion"
         description=f"It's got to be 'NdN+/-N' or a 'saved_roll_name+/-N'"
         # Remove spaces from input
-        roll = roll.replace(" ", "").lower()
+        roll = "".join(roll)
         roll_match = self.dice_re.match(roll)
 
         if roll_match is not None:
