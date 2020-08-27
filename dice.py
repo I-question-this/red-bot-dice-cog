@@ -50,7 +50,7 @@ class Dice(commands.Cog):
         return await ctx.send(embed=embed)
 
 
-    @commands.command(name="list_saved_rolls")
+    @commands.command(name="list_saved_rolls", aliases=['saved_rolls'])
     async def list_saved_rolls(self, ctx: commands.Context):
         saved_rolls = await self._conf.member(ctx.author).rolls()
         if len(saved_rolls) == 0:
